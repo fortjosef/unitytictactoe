@@ -9,9 +9,15 @@ public class PlayArea : MonoBehaviour {
     public float cameraheight;
 
     private SpriteRenderer renderer;
+
+    private void Awake() {
+        //reset to native scale, the scale will be different to aid in visualization during development
+        transform.localScale = new Vector3(1, 1, transform.localScale.z);
+    }
+
     // Start is called before the first frame update
     void Start() {
-        //transform.localScale = new Vector3(Screen.width, Screen.height, transform.localScale.z);
+        
         renderer = GetComponent<SpriteRenderer>();
         width = renderer.bounds.size.x;
         height = renderer.bounds.size.y;
@@ -30,9 +36,10 @@ public class PlayArea : MonoBehaviour {
         camerawidth = cameraheight / Screen.height * Screen.width;
 
         float widthval = Mathf.Round((camerawidth / width) * 100f) /100f;
+        float heightval = Mathf.Round((cameraheight / height) * 100f) / 100f;
 
-        if (transform.localScale.x != widthval) { 
-            transform.localScale = new Vector3(widthval, 1, transform.localScale.z);
+        if (transform.localScale.x != widthval || transform.localScale.y != heightval) { 
+            transform.localScale = new Vector3(widthval, heightval, transform.localScale.z);
         }
     }
 }
