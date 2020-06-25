@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayArea : MonoBehaviour {
-    public float width;
-    public float height;
+    public float backgroundSpriteWidth;
+    public float backgroundSpriteHeight;
     public float camerawidth;
     public float cameraheight;
+    public Sprite XSprite;
+    public Sprite lineSprite;
+
+    private float scaleFactor;
 
     private SpriteRenderer renderer;
 
@@ -17,29 +21,116 @@ public class PlayArea : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        
         renderer = GetComponent<SpriteRenderer>();
-        width = renderer.bounds.size.x;
-        height = renderer.bounds.size.y;
+        backgroundSpriteWidth = renderer.bounds.size.x;
+        backgroundSpriteHeight = renderer.bounds.size.y;
+        /*
+        Vector3 foo = new Vector3(1, 1, 0);
+        Quaternion blah = Quaternion.Euler(0, 0, 90);
+        foo = blah * foo;
+        Debug.Log(foo);
+        */
+
     }
 
     // Update is called once per frame
     void Update() {
-        /*
-        RectTransform rect = (RectTransform)transform;
-        width = rect.rect.width;
-        height = rect.rect.height;
-        */
-
-
         cameraheight = (float)(Camera.main.orthographicSize * 2.0);
         camerawidth = cameraheight / Screen.height * Screen.width;
 
-        float widthval = Mathf.Round((camerawidth / width) * 100f) /100f;
-        float heightval = Mathf.Round((cameraheight / height) * 100f) / 100f;
+        float widthval = Mathf.Round((camerawidth / backgroundSpriteWidth) * 100f) /100f;
+        float heightval = Mathf.Round((cameraheight / backgroundSpriteHeight) * 100f) / 100f;
 
         if (transform.localScale.x != widthval || transform.localScale.y != heightval) { 
             transform.localScale = new Vector3(widthval, heightval, transform.localScale.z);
+            transform.position = new Vector3(0, 0, 0);
+            //layout board here, do i want to contain it in a gameobject?
+            //when it is in a game object i can just scale the container rather than each object
+            GameObject boardContainer = new GameObject();
+            boardContainer.name = "boardContainer";
+            var boardSize = 3;
+            var boardHeight = cameraheight - 40;
+            var lineLongDimension = boardHeight / boardSize;
+
+            GameObject go = new GameObject();
+            go.AddComponent<SpriteRenderer>();
+            SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
+            sr.sprite = lineSprite;
+            var lineWidth = sr.bounds.size.x;
+            var lineHeight = sr.bounds.size.y;
+            //Debug.Log("height" + lineHeight);
+            //Debug.Log("width" + lineWidth);
+            scaleFactor = lineLongDimension / lineWidth;
+
+            //will need to rotate on the z
+            //add verticals
+            float lineDimensionScaled = lineWidth * scaleFactor;
+            //Debug.Log(lineDimensionScaled);
+            //Debug.Log((boardSize / 2f) - .5f);
+            float yCoord = ((boardSize / 2f) - .5f) * lineDimensionScaled;
+            float xCoord = -(((boardSize - 1) / 2f) - .5f) * lineDimensionScaled;
+
+            for (var y = 0; y < boardSize - 1; y++) {
+                for (var x = 0; x < boardSize; x++) {
+                    //Debug.Log(yCoord);
+                    if (y != 0 || (y == 0 && x != 0)) {
+                        go = new GameObject();
+                        go.AddComponent<SpriteRenderer>();
+                        sr = go.GetComponent<SpriteRenderer>();
+                        sr.sprite = lineSprite;
+                    }
+
+                    go.transform.rotation = Quaternion.Euler(0, 0, 90);
+                    go.transform.localScale = new Vector3(scaleFactor, scaleFactor, 0);
+                    go.transform.position = new Vector3(xCoord, yCoord, 0);
+                    go.transform.parent = boardContainer.transform;
+
+                    yCoord -= lineDimensionScaled;
+                }
+
+                yCoord = ((boardSize / 2f) - .5f) * lineDimensionScaled;
+                xCoord += lineDimensionScaled;
+            }
+
+            //horizontal lines
+
+            yCoord = (((boardSize - 1) / 2f) - .5f) * lineDimensionScaled; 
+            xCoord = -((boardSize / 2f) - .5f) * lineDimensionScaled;
+
+            for (var y = 0; y < boardSize - 1; y++) {
+                for (var x = 0; x < boardSize; x++) {
+                    go = new GameObject();
+                    go.AddComponent<SpriteRenderer>();
+                    sr = go.GetComponent<SpriteRenderer>();
+                    sr.sprite = lineSprite;
+                    
+
+                    go.transform.rotation = Quaternion.Euler(0, 0, 0);
+                    go.transform.localScale = new Vector3(scaleFactor, scaleFactor, 0);
+                    go.transform.position = new Vector3(xCoord, yCoord, 0);
+                    go.transform.parent = boardContainer.transform;
+
+                    xCoord += lineDimensionScaled;
+                }
+
+                xCoord = -((boardSize / 2f) - .5f) * lineDimensionScaled;
+                yCoord -= lineDimensionScaled;
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0)) {
+            Vector3 mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //Debug.Log(mousepos.x.ToString() + " " + mousepos.y.ToString() + "\n");
+            
+            GameObject go = new GameObject();
+            go.AddComponent<SpriteRenderer>();
+            SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
+            Sprite sprite = XSprite;
+            
+            sr.sprite = sprite;
+            go.transform.localScale = new Vector3(scaleFactor, scaleFactor, 0);
+            go.transform.position = new Vector3(mousepos.x, mousepos.y, transform.position.z);
+            
         }
     }
 }
