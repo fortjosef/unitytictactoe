@@ -9,6 +9,9 @@ public class PlayArea : MonoBehaviour {
     public float cameraheight;
     public Sprite XSprite;
     public Sprite lineSprite;
+    public int[,] playField;
+    public float lineDimensionScaled;
+    int boardSize;
 
     private float scaleFactor;
 
@@ -48,9 +51,11 @@ public class PlayArea : MonoBehaviour {
             //when it is in a game object i can just scale the container rather than each object
             GameObject boardContainer = new GameObject();
             boardContainer.name = "boardContainer";
-            var boardSize = 3;
+            boardSize = 3;
             var boardHeight = cameraheight - 40;
             var lineLongDimension = boardHeight / boardSize;
+            playField = new int[boardSize, boardSize];
+            
 
             GameObject go = new GameObject();
             go.AddComponent<SpriteRenderer>();
@@ -64,7 +69,7 @@ public class PlayArea : MonoBehaviour {
 
             //will need to rotate on the z
             //add verticals
-            float lineDimensionScaled = lineWidth * scaleFactor;
+            lineDimensionScaled = lineWidth * scaleFactor;
             //Debug.Log(lineDimensionScaled);
             //Debug.Log((boardSize / 2f) - .5f);
             float yCoord = ((boardSize / 2f) - .5f) * lineDimensionScaled;
@@ -120,16 +125,21 @@ public class PlayArea : MonoBehaviour {
 
         if (Input.GetMouseButtonDown(0)) {
             Vector3 mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            //Debug.Log(mousepos.x.ToString() + " " + mousepos.y.ToString() + "\n");
+            float boardBound = (boardSize / 2f) * lineDimensionScaled;
+            Debug.Log(mousepos.x.ToString() + " " + mousepos.y.ToString() + " " + boardBound.ToString() + "\n");
             
-            GameObject go = new GameObject();
-            go.AddComponent<SpriteRenderer>();
-            SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
-            Sprite sprite = XSprite;
+
+            if (mousepos.x > -boardBound && mousepos.x < boardBound
+                && mousepos.y > -boardBound && mousepos.y < boardBound) { 
+                GameObject go = new GameObject();
+                go.AddComponent<SpriteRenderer>();
+                SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
+                Sprite sprite = XSprite;
             
-            sr.sprite = sprite;
-            go.transform.localScale = new Vector3(scaleFactor, scaleFactor, 0);
-            go.transform.position = new Vector3(mousepos.x, mousepos.y, transform.position.z);
+                sr.sprite = sprite;
+                go.transform.localScale = new Vector3(scaleFactor, scaleFactor, 0);
+                go.transform.position = new Vector3(mousepos.x, mousepos.y, transform.position.z);
+            }
             
         }
     }
