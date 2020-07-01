@@ -11,7 +11,7 @@ public class PlayArea : MonoBehaviour {
     public Sprite lineSprite;
     public int[,] playField;
     public float lineDimensionScaled;
-    int boardSize;
+    public int boardSize;
 
     private float scaleFactor;
 
@@ -51,7 +51,7 @@ public class PlayArea : MonoBehaviour {
             //when it is in a game object i can just scale the container rather than each object
             GameObject boardContainer = new GameObject();
             boardContainer.name = "boardContainer";
-            boardSize = 3;
+            //boardSize = 3;
             var boardHeight = cameraheight - 40;
             var lineLongDimension = boardHeight / boardSize;
             playField = new int[boardSize, boardSize];
@@ -142,6 +142,8 @@ public class PlayArea : MonoBehaviour {
 
                 if (playField[xIndex, yIndex] == 0) {
                     playField[xIndex, yIndex] = 1;
+                    float normalizedX = ((xIndex * lineDimensionScaled) - amountToAdd) + (lineDimensionScaled / 2f);
+                    float normalizedY = -((yIndex * lineDimensionScaled) - amountToAdd) - (lineDimensionScaled / 2f);
                     GameObject go = new GameObject();
                     go.name = "piece_" + xIndex.ToString() + "_" + yIndex.ToString();
                     go.AddComponent<SpriteRenderer>();
@@ -150,7 +152,7 @@ public class PlayArea : MonoBehaviour {
             
                     sr.sprite = sprite;
                     go.transform.localScale = new Vector3(scaleFactor, scaleFactor, 0);
-                    go.transform.position = new Vector3(mousepos.x, mousepos.y, transform.position.z);
+                    go.transform.position = new Vector3(normalizedX, normalizedY, transform.position.z);
                 }
             }
             
