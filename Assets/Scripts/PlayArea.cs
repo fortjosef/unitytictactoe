@@ -138,15 +138,20 @@ public class PlayArea : MonoBehaviour {
                 float mouseYadj = -(mousepos.y - amountToAdd);
                 int xIndex = (int)Mathf.Floor(mouseXadj / lineDimensionScaled);
                 int yIndex = (int)Mathf.Floor(mouseYadj / lineDimensionScaled);
-                Debug.Log(xIndex.ToString() + " " + yIndex.ToString());
-                GameObject go = new GameObject();
-                go.AddComponent<SpriteRenderer>();
-                SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
-                Sprite sprite = XSprite;
+                //Debug.Log(xIndex.ToString() + " " + yIndex.ToString());
+
+                if (playField[xIndex, yIndex] == 0) {
+                    playField[xIndex, yIndex] = 1;
+                    GameObject go = new GameObject();
+                    go.name = "piece_" + xIndex.ToString() + "_" + yIndex.ToString();
+                    go.AddComponent<SpriteRenderer>();
+                    SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
+                    Sprite sprite = XSprite;
             
-                sr.sprite = sprite;
-                go.transform.localScale = new Vector3(scaleFactor, scaleFactor, 0);
-                go.transform.position = new Vector3(mousepos.x, mousepos.y, transform.position.z);
+                    sr.sprite = sprite;
+                    go.transform.localScale = new Vector3(scaleFactor, scaleFactor, 0);
+                    go.transform.position = new Vector3(mousepos.x, mousepos.y, transform.position.z);
+                }
             }
             
         }
