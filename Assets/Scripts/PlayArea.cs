@@ -126,11 +126,19 @@ public class PlayArea : MonoBehaviour {
         if (Input.GetMouseButtonDown(0)) {
             Vector3 mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             float boardBound = (boardSize / 2f) * lineDimensionScaled;
-            Debug.Log(mousepos.x.ToString() + " " + mousepos.y.ToString() + " " + boardBound.ToString() + "\n");
+            //Debug.Log(mousepos.x.ToString() + " " + mousepos.y.ToString() + " " + boardBound.ToString() + "\n");
             
 
             if (mousepos.x > -boardBound && mousepos.x < boardBound
-                && mousepos.y > -boardBound && mousepos.y < boardBound) { 
+                && mousepos.y > -boardBound && mousepos.y < boardBound) {
+
+                //want to make sure there is only one per box and normalize the position to the center of the box
+                float amountToAdd = (boardSize / 2f) * lineDimensionScaled; //maybe just reuse BoardBound
+                float mouseXadj = mousepos.x + amountToAdd;
+                float mouseYadj = -(mousepos.y - amountToAdd);
+                int xIndex = (int)Mathf.Floor(mouseXadj / lineDimensionScaled);
+                int yIndex = (int)Mathf.Floor(mouseYadj / lineDimensionScaled);
+                Debug.Log(xIndex.ToString() + " " + yIndex.ToString());
                 GameObject go = new GameObject();
                 go.AddComponent<SpriteRenderer>();
                 SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
