@@ -8,6 +8,8 @@ public class PlayArea : MonoBehaviour {
     public float camerawidth;
     public float cameraheight;
     public Sprite XSprite;
+    public Sprite OSprite;
+    public bool isX = true;
     public Sprite lineSprite;
     public int[,] playField;
     public float lineDimensionScaled;
@@ -84,7 +86,7 @@ public class PlayArea : MonoBehaviour {
                         sr = go.GetComponent<SpriteRenderer>();
                         sr.sprite = lineSprite;
                     }
-
+                    sr.sortingOrder = 1;
                     go.transform.rotation = Quaternion.Euler(0, 0, 90);
                     go.transform.localScale = new Vector3(scaleFactor, scaleFactor, 0);
                     go.transform.position = new Vector3(xCoord, yCoord, 0);
@@ -109,7 +111,7 @@ public class PlayArea : MonoBehaviour {
                     sr = go.GetComponent<SpriteRenderer>();
                     sr.sprite = lineSprite;
                     
-
+                    sr.sortingOrder = 1;
                     go.transform.rotation = Quaternion.Euler(0, 0, 0);
                     go.transform.localScale = new Vector3(scaleFactor, scaleFactor, 0);
                     go.transform.position = new Vector3(xCoord, yCoord, 0);
@@ -148,11 +150,19 @@ public class PlayArea : MonoBehaviour {
                     go.name = "piece_" + xIndex.ToString() + "_" + yIndex.ToString();
                     go.AddComponent<SpriteRenderer>();
                     SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
-                    Sprite sprite = XSprite;
+                    Sprite sprite;
+
+                    if (isX) { 
+                        sprite = XSprite;
+                    } else {
+                        sprite = OSprite;
+                    }
             
                     sr.sprite = sprite;
+                    sr.sortingOrder = 2;
                     go.transform.localScale = new Vector3(scaleFactor, scaleFactor, 0);
                     go.transform.position = new Vector3(normalizedX, normalizedY, transform.position.z);
+                    isX = !isX;
                 }
             }
             
