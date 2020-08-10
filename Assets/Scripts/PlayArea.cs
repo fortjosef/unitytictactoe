@@ -35,7 +35,101 @@ public class PlayArea : MonoBehaviour {
         foo = blah * foo;
         Debug.Log(foo);
         */
+        
 
+    }
+
+    void outputPlayfield() {
+        for (int y = 0; y < boardSize; y++) {
+            Debug.Log(
+                "Row " + y.ToString() + " | "
+                + playField[y, 0].ToString() + " "
+                + playField[y, 1].ToString() + " "
+                + playField[y, 2].ToString()
+            );
+        }
+        Debug.Log("------------");
+    }
+
+    int checkForWin() {
+        //will probably want to draw lines over the winning pieces, do that here?
+        //otherwise will need to pass back the results
+        int result = 0; // -1 O wins, 1 X wins, O no win, 2 cat
+        int[] rowTots = new int[boardSize];
+        int[] colTots = new int[boardSize];
+        int[] diagTots = new int[2];
+
+        int allSquares = boardSize * boardSize;
+        int squaresFilled = 0;
+
+        //add columns add rows get diags
+        for (int y = 0; y < boardSize; y++) {
+            for (int x = 0; x < boardSize; x++) {
+                if (playField[y, x] != 0) {
+                    squaresFilled++;
+                }
+
+                rowTots[y] += playField[y, x];
+                colTots[x] += playField[y, x];
+
+                if (y == x) {
+                    diagTots[0] += playField[y, x];
+                }
+
+                if (y + x == boardSize - 1) {
+                    diagTots[1] += playField[y, x];
+                }
+            }
+        }
+
+        //once shifting is implemented it is very possible that both x and o could win at the same time
+        int xWins = 0;
+        int oWins = 0;
+
+        for (int y = 0; y < boardSize; y++) {
+            if (colTots[y] == boardSize) {
+                xWins++;
+            }
+
+            if (rowTots[y] == boardSize) {
+                xWins++;
+            }
+
+            if (colTots[y] == -boardSize) {
+                oWins++;
+            }
+
+            if (rowTots[y] == -boardSize) {
+                oWins++;
+            }
+
+            if (y < 2) {
+                if (diagTots[y] == boardSize) {
+                    xWins++;
+                }
+
+                if (diagTots[y] == -boardSize) {
+                    oWins++;
+                }
+            }
+        }
+
+        //Debug.Log(rowTots[0].ToString() + " " + rowTots[1].ToString() + " " + rowTots[2].ToString());
+        //Debug.Log(colTots[0].ToString() + " " + colTots[1].ToString() + " " + colTots[2].ToString());
+        //Debug.Log(diagTots[0].ToString() + " " + diagTots[1].ToString());
+
+        if (xWins > oWins) {
+            result = 1;
+        } else if (oWins > xWins) {
+            result = -1;
+        } else if (xWins > 0 && xWins == oWins) {
+            //tie!
+            result = 2;
+        } else if (allSquares == squaresFilled) {
+            result = 2;
+        }
+
+        return result;
     }
 
     // Update is called once per frame
@@ -57,7 +151,8 @@ public class PlayArea : MonoBehaviour {
             var boardHeight = cameraheight - 40;
             var lineLongDimension = boardHeight / boardSize;
             playField = new int[boardSize, boardSize];
-            
+            //arrays initialize to 0
+           
 
             GameObject go = new GameObject();
             go.AddComponent<SpriteRenderer>();
@@ -142,8 +237,9 @@ public class PlayArea : MonoBehaviour {
                 int yIndex = (int)Mathf.Floor(mouseYadj / lineDimensionScaled);
                 //Debug.Log(xIndex.ToString() + " " + yIndex.ToString());
 
-                if (playField[xIndex, yIndex] == 0) {
-                    playField[xIndex, yIndex] = 1;
+                if (playField[yIndex, xIndex] == 0) {
+                    playField[yIndex, xIndex] = isX ? 1 : -1;
+                    //outputPlayfield();
                     float normalizedX = ((xIndex * lineDimensionScaled) - amountToAdd) + (lineDimensionScaled / 2f);
                     float normalizedY = -((yIndex * lineDimensionScaled) - amountToAdd) - (lineDimensionScaled / 2f);
                     GameObject go = new GameObject();
@@ -162,6 +258,7 @@ public class PlayArea : MonoBehaviour {
                     sr.sortingOrder = 2;
                     go.transform.localScale = new Vector3(scaleFactor, scaleFactor, 0);
                     go.transform.position = new Vector3(normalizedX, normalizedY, transform.position.z);
+                    Debug.Log(checkForWin());
                     isX = !isX;
                 }
             }

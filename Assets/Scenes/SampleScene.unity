@@ -303,6 +303,8 @@ MonoBehaviour:
   camerawidth: 0
   cameraheight: 0
   XSprite: {fileID: 21300000, guid: dfedb755633954df3ad4440de39af4a6, type: 3}
+  OSprite: {fileID: 21300000, guid: 8fdd7281e8bea41a6b90ede95210ca20, type: 3}
+  isX: 1
   lineSprite: {fileID: 21300000, guid: 855ba97460db949d59cf10ed38a36ca3, type: 3}
   lineDimensionScaled: 0
   boardSize: 3
