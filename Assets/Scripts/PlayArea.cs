@@ -14,7 +14,7 @@ public class PlayArea : MonoBehaviour {
     public int[,] playField;
     public float lineDimensionScaled;
     public int boardSize;
-
+    private GameObject boardContainer;
     private float scaleFactor;
 
     private SpriteRenderer renderer;
@@ -145,7 +145,11 @@ public class PlayArea : MonoBehaviour {
             transform.position = new Vector3(0, 0, 0);
             //layout board here, do i want to contain it in a gameobject?
             //when it is in a game object i can just scale the container rather than each object
-            GameObject boardContainer = new GameObject();
+            if (boardContainer != null) {
+                GameObject.Destroy(boardContainer);
+            }
+
+            boardContainer = new GameObject();
             boardContainer.name = "boardContainer";
             //boardSize = 3;
             var boardHeight = cameraheight - 40;
